@@ -602,6 +602,12 @@ function buildCustomDateFromInput() {
 function updateCustomCountdown() {
   const targetDate = appliedCustomDate;
   const now = new Date();
+  const calendarKey = `${customCalendarDate.getFullYear()}-${customCalendarDate.getMonth()}-${now.getFullYear()}-${now.getMonth()}-${now.getDate()}-${targetDate?.getTime() ?? 'none'}`;
+
+  if (calendarKey !== customCalendarRenderKey) {
+    renderCustomCalendar(now, targetDate);
+    customCalendarRenderKey = calendarKey;
+  }
 
   if (!targetDate) {
     customStatusTextElement.textContent = 'Elige una fecha válida para empezar la cuenta.';
@@ -621,11 +627,6 @@ function updateCustomCountdown() {
   }
 
   customStatusTextElement.textContent = `Faltan ${countdown.days} días, ${countdown.hours} horas, ${countdown.minutes} minutos y ${countdown.seconds} segundos para ${formatDate(targetDate)}.`;
-  const calendarKey = `${customCalendarDate.getFullYear()}-${customCalendarDate.getMonth()}-${now.getFullYear()}-${now.getMonth()}-${now.getDate()}-${targetDate.getTime()}`;
-  if (calendarKey !== customCalendarRenderKey) {
-    renderCustomCalendar(now, targetDate);
-    customCalendarRenderKey = calendarKey;
-  }
 }
 
 function setDefaultCustomDate() {
@@ -774,7 +775,7 @@ toggleMainForm?.addEventListener('click', () => {
 function setupPersistedPanel(toggle, content, storageKey) {
   if (!toggle || !content) return;
 
-  const isExpanded = localStorage.getItem(storageKey) !== 'false';
+  const isExpanded = localStorage.getItem(storageKey) === 'true';
   toggle.setAttribute('aria-expanded', String(isExpanded));
   content.hidden = !isExpanded;
 
@@ -786,8 +787,8 @@ function setupPersistedPanel(toggle, content, storageKey) {
   });
 }
 
-setupPersistedPanel(toggleAnnualEvents, annualEventsContent, 'annualEventsExpanded');
-setupPersistedPanel(toggleCustomDate, customDateContent, 'customDateExpanded');
+setupPersistedPanel(toggleAnnualEvents, annualEventsContent, 'annualEventsExpanded-v2');
+setupPersistedPanel(toggleCustomDate, customDateContent, 'customDateExpanded-v2');
 
 document.querySelectorAll('.date-shortcut').forEach((button) => {
   button.addEventListener('click', () => {
