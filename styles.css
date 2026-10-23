@@ -171,7 +171,7 @@ body.theme-dark .paper-sheet {
   grid-column: 2;
   grid-row: 1;
   min-width: 0;
-  max-height: calc(100vh - 340px);
+  max-height: min(85vh, 760px);
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior-y: contain;
@@ -797,7 +797,7 @@ h1 {
 
 .custom-date-panel {
   margin-top: 18px;
-  padding: 14px 12px 10px;
+  padding: 14px 12px 24px;
   border: 1px solid rgba(35, 110, 116, 0.25);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.2);
