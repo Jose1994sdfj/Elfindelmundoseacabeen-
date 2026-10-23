@@ -634,7 +634,7 @@ function updateCustomCountdown() {
 
 function setDefaultCustomDate() {
   const futureDate = new Date();
-  futureDate.setDate(futureDate.getDate() + 30);
+  futureDate.setDate(futureDate.getDate() + 1);
 
   const year = futureDate.getFullYear();
   const month = String(futureDate.getMonth() + 1).padStart(2, '0');
@@ -791,7 +791,7 @@ function setupPersistedPanel(toggle, content, storageKey) {
 }
 
 setupPersistedPanel(toggleAnnualEvents, annualEventsContent, 'annualEventsExpanded-v2');
-setupPersistedPanel(toggleCustomDate, customDateContent, 'customDateExpanded-v2');
+setupPersistedPanel(toggleCustomDate, customDateContent, 'customDateExpanded-v3');
 
 document.querySelectorAll('.date-shortcut').forEach((button) => {
   button.addEventListener('click', () => {
