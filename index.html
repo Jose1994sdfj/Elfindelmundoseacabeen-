@@ -3,16 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f5d36b" />
+    <meta name="theme-color" content="#eef7f5" />
     <meta
       name="description"
-      content="Cuenta regresiva configurable para cualquier fecha, con interfaz de laboratorio de inteligencia artificial."
+      content="Calendario personal con cuentas regresivas, fechas especiales y notas para cada día."
     />
-    <title>Objetivo temporal — laboratorio de IA</title>
+    <title>Fechas que importan — Calendario personal</title>
     <link rel="manifest" href="manifest.json" />
     <link rel="icon" href="icon-192.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="icon-192.svg" />
-    <link rel="stylesheet" href="styles.css?v=10" />
+    <link rel="stylesheet" href="styles.css?v=34" />
   </head>
   <body>
     <main class="notebook-app">
@@ -20,212 +20,274 @@
         <div class="paper-sheet">
           <div class="top-ribbon">
             <button class="dot pink theme-swatch" data-theme="pink" type="button" aria-label="Usar paleta rosa" title="Paleta rosa"></button>
-            <button class="dot yellow theme-swatch" data-theme="yellow" type="button" aria-label="Usar paleta amarilla" title="Paleta amarilla"></button>
+            <button class="dot dark theme-swatch" data-theme="dark" type="button" aria-label="Usar tema oscuro" title="Tema oscuro"></button>
             <button class="dot blue theme-swatch" data-theme="blue" type="button" aria-label="Usar paleta azul" title="Paleta azul"></button>
           </div>
 
           <header class="title-wrap">
-            <p class="eyebrow">laboratorio de IA · módulo temporal</p>
-            <h1>Configura tu próximo objetivo</h1>
+            <div class="title-copy">
+              <p class="eyebrow">calendario personal · fechas que importan</p>
+              <h1>Cuenta atrás para lo que importa.</h1>
+              <p class="page-intro">Organiza tus objetivos, guarda tus notas y acompaña el paso de las estaciones.</p>
+            </div>
+            <svg class="hero-illustration" viewBox="0 0 240 190" role="img" aria-labelledby="heroIllustrationTitle">
+              <title id="heroIllustrationTitle">Calendario ilustrado con una luna, murciélagos y estrellas animadas</title>
+              <g class="gothic-details" aria-hidden="true">
+                <circle class="moon-halo" cx="207" cy="35" r="19" />
+                <path class="hero-moon" d="M207 19a16 16 0 1 0 14 24 13 13 0 0 1-14-24z" />
+                <path class="gothic-bat bat-one" d="M20 93c6-8 11-8 16-1 5-7 10-7 16 1l-5-1-2 7-8-4-8 4-2-7z" />
+                <path class="gothic-bat bat-two" d="M190 77c5-7 9-7 14-1 4-6 9-6 14 1l-5-1-2 6-7-4-7 4-2-6z" />
+                <path class="gothic-star star-one" d="m35 132 2-6 2 6 6 2-6 2-2 6-2-6-6-2z" />
+                <path class="gothic-star star-two" d="m219 119 1.5-4 1.5 4 4 1.5-4 1.5-1.5 4-1.5-4-4-1.5z" />
+              </g>
+              <path d="M33 35c12-15 27-22 47-23M185 26c12 4 20 12 25 23M26 151c7 11 17 18 30 22" fill="none" stroke="var(--blue)" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 9" />
+              <path d="m187 129 5-12 5 12 12 5-12 5-5 12-5-12-12-5z" fill="var(--yellow)" />
+              <path d="m43 64 3-7 3 7 7 3-7 3-3 7-3-7-7-3z" fill="var(--pink)" />
+              <g transform="rotate(-6 112 91)">
+                <rect x="57" y="29" width="112" height="132" rx="14" fill="var(--paper-strong)" opacity=".65" />
+                <rect x="50" y="23" width="112" height="132" rx="14" fill="var(--paper)" stroke="var(--ink)" stroke-width="3" />
+                <path d="M50 39a16 16 0 0 1 16-16h80a16 16 0 0 1 16 16v20H50z" fill="var(--pink)" />
+                <path d="M77 18v16M135 18v16" stroke="var(--ink)" stroke-width="5" stroke-linecap="round" />
+                <circle cx="77" cy="20" r="4" fill="var(--yellow)" />
+                <circle cx="135" cy="20" r="4" fill="var(--yellow)" />
+                <path d="M68 78h15m12 0h15m12 0h15M68 98h15m12 0h15m12 0h15M68 118h15m12 0h15" stroke="var(--blue)" stroke-width="7" stroke-linecap="round" opacity=".7" />
+                <circle cx="140" cy="118" r="11" fill="var(--yellow)" />
+                <path d="m135 118 4 4 7-8" fill="none" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+              </g>
+              <circle cx="177" cy="105" r="27" fill="var(--mint)" stroke="var(--ink)" stroke-width="3" />
+              <circle cx="177" cy="105" r="20" fill="var(--paper)" />
+              <path d="M177 91v15l10 6" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+              <circle cx="177" cy="105" r="2.5" fill="var(--pink)" />
+            </svg>
           </header>
 
-          <form id="mainForm" class="custom-form target-form">
-            <div class="form-grid">
-              <label class="field">
-                Fecha objetivo
-                <input id="mainDate" type="date" required />
-              </label>
+          <div class="main-screen-layout">
+            <div class="main-content-column">
+              <form id="mainForm" class="custom-form target-form">
+                <button id="toggleMainForm" class="date-form-heading" type="button" aria-expanded="true" aria-controls="mainFormFields">
+                  <span class="date-form-icon" aria-hidden="true">✦</span>
+                  <span class="date-form-heading-copy">
+                    <span class="date-form-title">Elige tu próximo objetivo</span>
+                    <span class="date-form-description">Define cuándo quieres que empiece la cuenta atrás.</span>
+                  </span>
+                  <span class="date-form-chevron" aria-hidden="true">⌄</span>
+                </button>
+                <div id="mainFormFields" class="date-form-fields">
+                  <div class="form-grid">
+                    <label class="field">
+                      Fecha objetivo
+                      <input id="mainDate" type="date" required />
+                    </label>
 
-              <label class="field">
-                Hora
-                <input id="mainTime" type="time" value="12:00" />
-              </label>
+                    <label class="field">
+                      Hora
+                      <input id="mainTime" type="time" value="12:00" />
+                    </label>
+                  </div>
+
+                  <div class="date-shortcuts" aria-label="Atajos de fecha">
+                    <span>O elige un plazo:</span>
+                    <button class="date-shortcut" type="button" data-days="7">1 semana</button>
+                    <button class="date-shortcut" type="button" data-days="30">30 días</button>
+                    <button class="date-shortcut" type="button" data-days="90">90 días</button>
+                  </div>
+
+                  <button type="submit" class="primary-button">Aplicar objetivo</button>
+                </div>
+                <p id="mainFormState" class="date-form-state" aria-live="polite"></p>
+              </form>
+
+              <section class="countdown-panel" aria-live="polite">
+                <div class="date-badge" id="targetDate">Próximo objetivo</div>
+
+                <div class="countdown-grid">
+                  <div class="time-box">
+                    <span class="value" id="days">00</span>
+                    <span class="label">días</span>
+                  </div>
+                  <div class="time-box">
+                    <span class="value" id="hours">00</span>
+                    <span class="label">horas</span>
+                  </div>
+                  <div class="time-box">
+                    <span class="value" id="minutes">00</span>
+                    <span class="label">min</span>
+                  </div>
+                  <div class="time-box">
+                    <span class="value" id="seconds">00</span>
+                    <span class="label">seg</span>
+                  </div>
+                </div>
+
+                <p class="status-text" id="statusText">Faltan exactamente</p>
+              </section>
+
+              <section id="seasonPanel" class="season-panel" aria-live="polite">
+                <div class="season-heading">
+                  <span class="season-kicker">estación actual</span>
+                  <span id="seasonIcon" class="season-icon" aria-hidden="true">☀</span>
+                </div>
+                <h2 id="seasonName">Verano</h2>
+                <p id="seasonMessage">La estación cambia con el calendario real.</p>
+                <div class="season-progress" aria-hidden="true">
+                  <span id="seasonProgress"></span>
+                </div>
+                <p id="nextSeasonText" class="next-season-text"></p>
+              </section>
+
+              <section class="calendar-strip" aria-label="Calendario del mes actual">
+                <div class="month-header">
+                  <button id="previousMonthButton" class="month-button" type="button" aria-label="Mes anterior">‹</button>
+                  <span id="monthLabel">mes</span>
+                  <span class="star" aria-hidden="true">⌬</span>
+                  <button id="nextMonthButton" class="month-button" type="button" aria-label="Mes siguiente">›</button>
+                </div>
+
+                <div class="calendar-grid" id="calendarGrid"></div>
+              </section>
+
+              <section class="notes-workspace" aria-labelledby="notesTitle">
+                <header class="notes-header">
+                  <div>
+                    <span class="season-kicker">Tu espacio personal</span>
+                    <h2 id="notesTitle">Libreta de días</h2>
+                    <p>Guarda recuerdos, ideas y pendientes junto a cada fecha.</p>
+                  </div>
+                  <span id="notesCount" class="notes-count">0 notas</span>
+                </header>
+
+                <div class="notes-layout">
+                  <form id="dayNoteForm" class="day-note-form">
+                    <span class="note-date-label">Nota para</span>
+                    <strong id="mainNoteDate" class="note-selected-date">Hoy</strong>
+                    <label class="field" for="mainNoteInput">¿Qué quieres recordar?</label>
+                    <textarea id="mainNoteInput" maxlength="500" rows="5" placeholder="Escribe un recuerdo, una idea o algo pendiente..."></textarea>
+                    <div class="note-form-footer">
+                      <small id="noteCharacterCount">0 / 500</small>
+                      <button id="saveMainNote" class="primary-button" type="submit">Guardar nota</button>
+                    </div>
+                    <p id="mainNotePreview" class="note-save-status" aria-live="polite">Elige un día del calendario o empieza con hoy.</p>
+                  </form>
+
+                  <section class="saved-notes" aria-labelledby="memoryBankTitle">
+                    <header class="memory-bank-header">
+                      <div>
+                        <span class="season-kicker">Tus momentos especiales</span>
+                        <h3 id="memoryBankTitle">Banco de recuerdos</h3>
+                        <p class="memory-bank-description">Recortes decorados según el tono que sugieren tus palabras.</p>
+                      </div>
+                      <span aria-hidden="true" class="memory-bank-icon">✧</span>
+                    </header>
+                    <label class="notes-search-label" for="notesSearch">Buscar en tus recuerdos</label>
+                    <input id="notesSearch" class="notes-search" type="search" placeholder="Busca por fecha o contenido..." />
+                    <div id="savedNotesList" class="saved-notes-list" aria-live="polite"></div>
+                  </section>
+                </div>
+              </section>
+
             </div>
 
-            <button type="submit" class="primary-button">Aplicar objetivo</button>
-          </form>
+            <aside class="main-sidebar" tabindex="0" aria-label="Sistema de fechas especiales y fecha personalizada">
+              <aside class="annual-events" aria-labelledby="annualEventsTitle">
+                <button id="toggleAnnualEvents" class="sidebar-section-toggle" type="button" aria-expanded="true" aria-controls="annualEventsList">
+                  <span id="annualEventsTitle">fechas especiales del año</span>
+                  <span class="sidebar-toggle-icon" aria-hidden="true">◈</span>
+                </button>
+                <div id="annualEventsList" class="annual-events-list"></div>
+              </aside>
 
-          <section class="countdown-panel" aria-live="polite">
-            <div class="date-badge" id="targetDate">Próximo objetivo</div>
+              <section id="customDatePanel" class="custom-date-panel" aria-labelledby="customTitle">
+                <button id="toggleCustomDate" class="sidebar-section-toggle custom-date-heading" type="button" aria-expanded="true" aria-controls="customDateContent">
+                  <span class="sidebar-section-copy">
+                    <span id="customTitle" class="sidebar-section-title">Programa una fecha importante</span>
+                    <span class="sidebar-section-description">Elige otra fecha para seguirla en una cuenta independiente.</span>
+                  </span>
+                  <span class="sidebar-toggle-chevron" aria-hidden="true">⌄</span>
+                </button>
 
-            <div class="countdown-grid">
-              <div class="time-box">
-                <span class="value" id="days">00</span>
-                <span class="label">días</span>
+                <div id="customDateContent" class="custom-date-content">
+                  <form id="customForm" class="custom-form">
+                  <div class="form-grid">
+                    <label class="field">
+                      Fecha
+                      <input id="customDate" type="date" required />
+                    </label>
+
+                    <label class="field">
+                      Hora
+                      <input id="customTime" type="time" value="12:00" />
+                    </label>
+                  </div>
+
+                  <div class="date-shortcuts" aria-label="Atajos de fecha">
+                    <span>O elige un plazo:</span>
+                    <button class="date-shortcut" type="button" data-days="7">1 semana</button>
+                    <button class="date-shortcut" type="button" data-days="30">30 días</button>
+                    <button class="date-shortcut" type="button" data-days="90">90 días</button>
+                  </div>
+
+                  <button type="submit" class="primary-button">Guardar fecha</button>
+                  <p id="customFormState" class="date-form-state" aria-live="polite"></p>
+                  </form>
+
+                  <section class="countdown-panel" aria-live="polite">
+                  <div class="date-badge" id="customTargetDate">Fecha personalizada</div>
+
+                  <div class="countdown-grid">
+                    <div class="time-box">
+                      <span class="value" id="customDays">00</span>
+                      <span class="label">días</span>
+                    </div>
+                    <div class="time-box">
+                      <span class="value" id="customHours">00</span>
+                      <span class="label">horas</span>
+                    </div>
+                    <div class="time-box">
+                      <span class="value" id="customMinutes">00</span>
+                      <span class="label">min</span>
+                    </div>
+                    <div class="time-box">
+                      <span class="value" id="customSeconds">00</span>
+                      <span class="label">seg</span>
+                    </div>
+                  </div>
+
+                  <p class="status-text" id="customStatusText">Esperando una fecha válida...</p>
+                  </section>
+                </div>
+
+                <section class="calendar-strip" aria-label="Calendario de la fecha personalizada">
+                  <div class="month-header">
+                    <button id="previousCustomMonthButton" class="month-button" type="button" aria-label="Mes anterior">‹</button>
+                    <span id="customMonthLabel">mes</span>
+                    <span class="star" aria-hidden="true">⌬</span>
+                    <button id="nextCustomMonthButton" class="month-button" type="button" aria-label="Mes siguiente">›</button>
+                  </div>
+                  <div class="calendar-grid" id="customCalendarGrid"></div>
+                </section>
+              </section>
+
+            </aside>
+
+            <footer class="app-footer">
+              <div class="footer-copy">
+                <span class="footer-kicker">Tu tiempo, a tu manera</span>
+                <p>Tus fechas y notas se guardan en este dispositivo.</p>
               </div>
-              <div class="time-box">
-                <span class="value" id="hours">00</span>
-                <span class="label">horas</span>
+              <div class="actions-row footer-actions">
+                <button id="resetButton" class="secondary-button" type="button">
+                  Reiniciar cuenta
+                </button>
+                <button class="install-button install-button-main" type="button" hidden>
+                  Instalar app
+                </button>
               </div>
-              <div class="time-box">
-                <span class="value" id="minutes">00</span>
-                <span class="label">min</span>
-              </div>
-              <div class="time-box">
-                <span class="value" id="seconds">00</span>
-                <span class="label">seg</span>
-              </div>
-            </div>
-
-            <p class="status-text" id="statusText">Faltan exactamente</p>
-          </section>
-
-          <section id="seasonPanel" class="season-panel" aria-live="polite">
-            <div class="season-heading">
-              <span class="season-kicker">estación actual</span>
-              <span id="seasonIcon" class="season-icon" aria-hidden="true">☀</span>
-            </div>
-            <h2 id="seasonName">Verano</h2>
-            <p id="seasonMessage">La estación cambia con el calendario real.</p>
-            <div class="season-progress" aria-hidden="true">
-              <span id="seasonProgress"></span>
-            </div>
-            <p id="nextSeasonText" class="next-season-text"></p>
-          </section>
-
-          <section class="calendar-strip" aria-label="Calendario del mes actual">
-            <div class="month-header">
-              <button id="previousMonthButton" class="month-button" type="button" aria-label="Mes anterior">‹</button>
-              <span id="monthLabel">mes</span>
-              <span class="star" aria-hidden="true">⌬</span>
-              <button id="nextMonthButton" class="month-button" type="button" aria-label="Mes siguiente">›</button>
-            </div>
-
-            <div class="calendar-grid" id="calendarGrid"></div>
-            <div class="calendar-note-editor">
-              <label class="field" for="mainNoteInput">Nota del día seleccionado</label>
-              <div class="note-input-row">
-                <input id="mainNoteInput" type="text" maxlength="120" placeholder="Escribe una nota..." />
-                <button id="saveMainNote" class="primary-button" type="button">Guardar</button>
-              </div>
-              <small id="mainNoteDate">Selecciona un día del calendario</small>
-              <p id="mainNotePreview" class="note-preview" aria-live="polite">Selecciona un día para ver su nota.</p>
-            </div>
-          </section>
-
-          <section class="annual-events" aria-labelledby="annualEventsTitle">
-            <div class="month-header">
-              <span id="annualEventsTitle">fechas especiales del año</span>
-              <span class="star" aria-hidden="true">◈</span>
-            </div>
-            <div id="annualEventsList" class="annual-events-list"></div>
-          </section>
-
-          <section class="weekly-message" aria-live="polite">
-            <div class="weekly-message-copy">
-              <span class="season-kicker">mensaje de la semana</span>
-              <h2 id="weeklyMessageTitle">Tu semana puede empezar bonito</h2>
-              <p id="weeklyMessageText"></p>
-              <time id="weeklyMessageDate"></time>
-            </div>
-            <button id="notificationButton" class="notification-button" type="button">
-              Activar avisos
-            </button>
-          </section>
-
-          <div class="screen-switcher">
-            <button id="switchToCustom" class="primary-button" type="button">
-              Fecha personalizada
-            </button>
-          </div>
-
-          <div class="actions-row">
-            <button id="resetButton" class="secondary-button" type="button">
-              Reiniciar cuenta
-            </button>
-            <button class="install-button install-button-main" type="button" hidden>
-              Instalar app
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section id="customScreen" class="screen">
-        <div class="paper-sheet">
-          <div class="top-ribbon">
-            <button class="dot pink theme-swatch" data-theme="pink" type="button" aria-label="Usar paleta rosa" title="Paleta rosa"></button>
-            <button class="dot yellow theme-swatch" data-theme="yellow" type="button" aria-label="Usar paleta amarilla" title="Paleta amarilla"></button>
-            <button class="dot blue theme-swatch" data-theme="blue" type="button" aria-label="Usar paleta azul" title="Paleta azul"></button>
-          </div>
-
-          <header class="title-wrap">
-            <p class="eyebrow">laboratorio de IA · simulación</p>
-            <h1>Programa una fecha importante</h1>
-          </header>
-
-          <form id="customForm" class="custom-form">
-            <div class="form-grid">
-              <label class="field">
-                Fecha
-                <input id="customDate" type="date" required />
-              </label>
-
-              <label class="field">
-                Hora
-                <input id="customTime" type="time" value="12:00" />
-              </label>
-            </div>
-
-            <button type="submit" class="primary-button">Guardar fecha</button>
-          </form>
-
-          <section class="countdown-panel" aria-live="polite">
-            <div class="date-badge" id="customTargetDate">Fecha personalizada</div>
-
-            <div class="countdown-grid">
-              <div class="time-box">
-                <span class="value" id="customDays">00</span>
-                <span class="label">días</span>
-              </div>
-              <div class="time-box">
-                <span class="value" id="customHours">00</span>
-                <span class="label">horas</span>
-              </div>
-              <div class="time-box">
-                <span class="value" id="customMinutes">00</span>
-                <span class="label">min</span>
-              </div>
-              <div class="time-box">
-                <span class="value" id="customSeconds">00</span>
-                <span class="label">seg</span>
-              </div>
-            </div>
-
-            <p class="status-text" id="customStatusText">Esperando una fecha válida...</p>
-          </section>
-
-          <section class="calendar-strip" aria-label="Calendario de la fecha personalizada">
-            <div class="month-header">
-              <button id="previousCustomMonthButton" class="month-button" type="button" aria-label="Mes anterior">‹</button>
-              <span id="customMonthLabel">mes</span>
-              <span class="star" aria-hidden="true">⌬</span>
-              <button id="nextCustomMonthButton" class="month-button" type="button" aria-label="Mes siguiente">›</button>
-            </div>
-
-            <div class="calendar-grid" id="customCalendarGrid"></div>
-            <div class="calendar-note-editor">
-              <label class="field" for="customNoteInput">Nota del día seleccionado</label>
-              <div class="note-input-row">
-                <input id="customNoteInput" type="text" maxlength="120" placeholder="Escribe una nota..." />
-                <button id="saveCustomNote" class="primary-button" type="button">Guardar</button>
-              </div>
-              <small id="customNoteDate">Selecciona un día del calendario</small>
-              <p id="customNotePreview" class="note-preview" aria-live="polite">Selecciona un día para ver su nota.</p>
-            </div>
-          </section>
-
-          <div class="screen-switcher">
-            <button id="switchToMain" class="link-button" type="button">
-              Pantalla principal
-            </button>
-            <button class="install-button install-button-custom" type="button" hidden>
-              Instalar app
-            </button>
+            </footer>
           </div>
         </div>
       </section>
     </main>
 
-    <script src="script.js?v=14"></script>
+    <script src="script.js?v=23"></script>
   </body>
 </html>
