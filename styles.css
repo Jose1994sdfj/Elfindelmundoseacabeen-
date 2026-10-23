@@ -869,37 +869,9 @@ h1 {
   width: 100%;
 }
 
-.custom-date-panel .countdown-panel,
 .custom-date-panel .calendar-strip {
   margin-top: 14px;
   padding: 12px 8px 10px;
-}
-
-.custom-date-panel .date-badge {
-  max-width: 100%;
-  padding: 7px 10px;
-  font-size: 0.68rem;
-  overflow-wrap: anywhere;
-}
-
-.custom-date-panel .countdown-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.custom-date-panel .time-box {
-  padding: 12px 6px 8px;
-}
-
-.custom-date-panel .value {
-  font-size: clamp(1.5rem, 3vw, 2rem);
-}
-
-.custom-date-panel .status-text {
-  margin-top: 12px;
-  font-size: 0.8rem;
-  line-height: 1.45;
 }
 
 .custom-date-panel .calendar-grid {
@@ -909,6 +881,75 @@ h1 {
 .custom-date-panel .calendar-day {
   min-height: 34px;
   font-size: 0.72rem;
+}
+
+.custom-countdown-summary {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(35, 110, 116, 0.18);
+  text-align: center;
+}
+
+.custom-countdown-target,
+.custom-countdown-text {
+  margin: 0;
+}
+
+.custom-countdown-target {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.custom-countdown-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+
+.custom-countdown-part {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  padding: 4px 8px;
+  border: 1px solid rgba(35, 110, 116, 0.16);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(244, 201, 93, 0.32), rgba(239, 143, 121, 0.3));
+  box-shadow: 0 2px 0 rgba(35, 110, 116, 0.1);
+}
+
+.custom-countdown-part:nth-child(2) {
+  background: linear-gradient(135deg, rgba(141, 214, 189, 0.4), rgba(97, 198, 209, 0.3));
+}
+
+.custom-countdown-part:nth-child(3) {
+  background: linear-gradient(135deg, rgba(239, 143, 174, 0.3), rgba(201, 184, 236, 0.4));
+}
+
+.custom-countdown-part:nth-child(4) {
+  background: linear-gradient(135deg, rgba(130, 196, 229, 0.36), rgba(244, 201, 93, 0.28));
+}
+
+.custom-countdown-number {
+  color: #267a83;
+  font-family: "Trebuchet MS", "Aptos", sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.custom-countdown-unit {
+  font-size: 0.68rem;
+  font-weight: 700;
 }
 
 .annual-events-list {
