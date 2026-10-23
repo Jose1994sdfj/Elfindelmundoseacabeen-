@@ -42,12 +42,8 @@ const customDateContent = document.getElementById('customDateContent');
 const customDateInput = document.getElementById('customDate');
 const customTimeInput = document.getElementById('customTime');
 const customFormState = document.getElementById('customFormState');
-const customDaysElement = document.getElementById('customDays');
-const customHoursElement = document.getElementById('customHours');
-const customMinutesElement = document.getElementById('customMinutes');
-const customSecondsElement = document.getElementById('customSeconds');
 const customTargetDateElement = document.getElementById('customTargetDate');
-const customStatusTextElement = document.getElementById('customStatusText');
+const customCountdownTextElement = document.getElementById('customCountdownText');
 const customCalendarGrid = document.getElementById('customCalendarGrid');
 const customMonthLabel = document.getElementById('customMonthLabel');
 const previousCustomMonthButton = document.getElementById('previousCustomMonthButton');
@@ -610,23 +606,30 @@ function updateCustomCountdown() {
   }
 
   if (!targetDate) {
-    customStatusTextElement.textContent = 'Elige una fecha válida para empezar la cuenta.';
+    customTargetDateElement.textContent = 'Fecha personalizada';
+    customCountdownTextElement.textContent = 'Elige una fecha para iniciar la cuenta regresiva.';
     return;
   }
 
   const countdown = getCountdownParts(targetDate);
-  customDaysElement.textContent = String(countdown.days).padStart(2, '0');
-  customHoursElement.textContent = String(countdown.hours).padStart(2, '0');
-  customMinutesElement.textContent = String(countdown.minutes).padStart(2, '0');
-  customSecondsElement.textContent = String(countdown.seconds).padStart(2, '0');
   customTargetDateElement.textContent = `Próximo: ${formatDate(targetDate)}`;
 
   if (targetDate.getTime() <= now.getTime()) {
-    customStatusTextElement.textContent = `La fecha elegida ya pasó. Selecciona otra mayor que ${formatDate(now)}.`;
+    customCountdownTextElement.textContent = 'La fecha elegida ya pasó. Elige una fecha futura.';
     return;
   }
 
-  customStatusTextElement.textContent = `Faltan ${countdown.days} días, ${countdown.hours} horas, ${countdown.minutes} minutos y ${countdown.seconds} segundos para ${formatDate(targetDate)}.`;
+  customCountdownTextElement.innerHTML = [
+    [countdown.days, countdown.days === 1 ? 'día' : 'días'],
+    [countdown.hours, 'horas'],
+    [countdown.minutes, 'min'],
+    [countdown.seconds, 'seg'],
+  ].map(([value, label]) => `
+    <span class="custom-countdown-part">
+      <span class="custom-countdown-number">${value}</span>
+      <span class="custom-countdown-unit">${label}</span>
+    </span>
+  `).join('');
 }
 
 function setDefaultCustomDate() {
@@ -657,7 +660,7 @@ customForm?.addEventListener('submit', (event) => {
   const selectedDate = buildCustomDateFromInput();
 
   if (!selectedDate) {
-    customStatusTextElement.textContent = 'Elige una fecha válida antes de guardar.';
+    customFormState.textContent = 'Elige una fecha válida antes de guardar.';
     return;
   }
 
