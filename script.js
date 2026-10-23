@@ -1,7 +1,5 @@
 const mainScreen = document.getElementById('mainScreen');
-const customScreen = document.getElementById('customScreen');
-const switchToCustom = document.getElementById('switchToCustom');
-const switchToMain = document.getElementById('switchToMain');
+const customDatePanel = document.getElementById('customDatePanel');
 
 const daysElement = document.getElementById('days');
 const hoursElement = document.getElementById('hours');
@@ -19,23 +17,31 @@ const seasonMessage = document.getElementById('seasonMessage');
 const seasonProgress = document.getElementById('seasonProgress');
 const nextSeasonText = document.getElementById('nextSeasonText');
 const annualEventsList = document.getElementById('annualEventsList');
-const weeklyMessageTitle = document.getElementById('weeklyMessageTitle');
-const weeklyMessageText = document.getElementById('weeklyMessageText');
-const weeklyMessageDate = document.getElementById('weeklyMessageDate');
-const notificationButton = document.getElementById('notificationButton');
 const previousMonthButton = document.getElementById('previousMonthButton');
 const nextMonthButton = document.getElementById('nextMonthButton');
 const mainNoteInput = document.getElementById('mainNoteInput');
-const saveMainNote = document.getElementById('saveMainNote');
 const mainNoteDate = document.getElementById('mainNoteDate');
 const mainNotePreview = document.getElementById('mainNotePreview');
+const dayNoteForm = document.getElementById('dayNoteForm');
+const noteCharacterCount = document.getElementById('noteCharacterCount');
+const notesCount = document.getElementById('notesCount');
+const notesSearch = document.getElementById('notesSearch');
+const savedNotesList = document.getElementById('savedNotesList');
 const mainForm = document.getElementById('mainForm');
+const toggleMainForm = document.getElementById('toggleMainForm');
+const mainFormFields = document.getElementById('mainFormFields');
 const mainDateInput = document.getElementById('mainDate');
 const mainTimeInput = document.getElementById('mainTime');
+const mainFormState = document.getElementById('mainFormState');
 
 const customForm = document.getElementById('customForm');
+const toggleAnnualEvents = document.getElementById('toggleAnnualEvents');
+const toggleCustomDate = document.getElementById('toggleCustomDate');
+const annualEventsContent = document.getElementById('annualEventsList');
+const customDateContent = document.getElementById('customDateContent');
 const customDateInput = document.getElementById('customDate');
 const customTimeInput = document.getElementById('customTime');
+const customFormState = document.getElementById('customFormState');
 const customDaysElement = document.getElementById('customDays');
 const customHoursElement = document.getElementById('customHours');
 const customMinutesElement = document.getElementById('customMinutes');
@@ -46,10 +52,6 @@ const customCalendarGrid = document.getElementById('customCalendarGrid');
 const customMonthLabel = document.getElementById('customMonthLabel');
 const previousCustomMonthButton = document.getElementById('previousCustomMonthButton');
 const nextCustomMonthButton = document.getElementById('nextCustomMonthButton');
-const customNoteInput = document.getElementById('customNoteInput');
-const saveCustomNote = document.getElementById('saveCustomNote');
-const customNoteDate = document.getElementById('customNoteDate');
-const customNotePreview = document.getElementById('customNotePreview');
 
 const installButtons = document.querySelectorAll('.install-button');
 const themeSwatches = document.querySelectorAll('.theme-swatch');
@@ -61,26 +63,20 @@ let bubbleObserver;
 let mainCalendarRenderKey;
 let customCalendarRenderKey;
 let annualEventsRenderKey;
-let weeklyMessageRenderKey;
 let mainCalendarDate = new Date();
 let customCalendarDate = new Date();
-let selectedMainNoteDate;
-let selectedCustomNoteDate;
-
-const WEEKLY_MESSAGES = [
-  'No tienes que resolverlo todo hoy: avanzar un poco también cuenta.',
-  'Tu esfuerzo de hoy está construyendo algo que mañana agradecerás.',
-  'Haz espacio para una pequeña alegría; también es parte del progreso.',
-  'Confía en tu ritmo. Lo constante puede ser más poderoso que lo rápido.',
-  'Esta semana merece una versión tuya paciente, curiosa y presente.',
-  'Una decisión amable contigo puede cambiar el tono de todo el día.',
-  'Ya has superado días difíciles. Este también puede traer algo bueno.',
-];
+let selectedNoteDate = new Date();
+let appliedMainDate;
+let appliedCustomDate;
 
 function applyTheme(themeName) {
-  const theme = ['pink', 'yellow', 'blue'].includes(themeName) ? themeName : 'yellow';
-  document.body.classList.remove('theme-pink', 'theme-yellow', 'theme-blue');
+  const theme = ['pink', 'blue', 'dark'].includes(themeName) ? themeName : 'blue';
+  document.body.classList.remove('theme-pink', 'theme-blue', 'theme-dark');
   document.body.classList.add(`theme-${theme}`);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute(
+    'content',
+    theme === 'dark' ? '#81798f' : theme === 'pink' ? '#fff3f5' : '#eef8fc',
+  );
 
   themeSwatches.forEach((swatch) => {
     const isActive = swatch.dataset.theme === theme;
@@ -92,10 +88,10 @@ function applyTheme(themeName) {
 }
 
 const SEASON_NAMES = {
-  spring: { name: 'Primavera', icon: '⌁', message: 'La página despierta: brotes, colores suaves y días que se alargan.' },
-  summer: { name: 'Verano', icon: '◉', message: 'El sol toma el cuaderno y la cuenta avanza con luz larga.' },
-  autumn: { name: 'Otoño', icon: '⌘', message: 'Las hojas cambian de color y cada día deja una pequeña marca.' },
-  winter: { name: 'Invierno', icon: '◇', message: 'El aire se vuelve sereno y las noches guardan más estrellas.' },
+  spring: { name: 'Primavera', icon: '✿', message: 'La página despierta: brotes, colores suaves y días que se alargan.' },
+  summer: { name: 'Verano', icon: '☀', message: 'El sol toma el cuaderno y la cuenta avanza con luz larga.' },
+  autumn: { name: 'Otoño', icon: '🍂', message: 'Las hojas cambian de color y cada día deja una pequeña marca.' },
+  winter: { name: 'Invierno', icon: '❄', message: 'El aire se vuelve sereno y las noches guardan más estrellas.' },
 };
 
 function getAnnualEvents(year) {
@@ -141,63 +137,17 @@ function isSameDay(left, right) {
     && left.getDate() === right.getDate();
 }
 
-function getWeekStart(date) {
-  const weekStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const day = weekStart.getDay();
-  const daysFromMonday = day === 0 ? 6 : day - 1;
-  weekStart.setDate(weekStart.getDate() - daysFromMonday);
-  weekStart.setHours(9, 0, 0, 0);
-  return weekStart;
-}
-
-function getWeekKey(date) {
-  return getWeekStart(date).toISOString().slice(0, 10);
-}
-
-function getWeeklyMessage(date) {
-  const weekStart = getWeekStart(date);
-  const firstWeek = new Date(2024, 0, 1, 9);
-  const weekNumber = Math.floor((weekStart - firstWeek) / 604800000);
-  const message = WEEKLY_MESSAGES[Math.abs(weekNumber) % WEEKLY_MESSAGES.length];
-
-  return {
-    key: `weekly-${getWeekKey(date)}`,
-    date: weekStart,
-    label: 'Mensaje positivo de la semana',
-    message,
-  };
-}
-
 function getCalendarEventsForMonth(year, month, referenceDate) {
-  const events = getAnnualEvents(year);
-  const cursor = new Date(year, month, 1, 9);
-
-  while (cursor.getMonth() === month) {
-    if (cursor.getDay() === 1) {
-      const weeklyEvent = getWeeklyMessage(cursor);
-      events.push({ ...weeklyEvent, label: `Mensaje semanal: ${weeklyEvent.message}` });
-    }
-    cursor.setDate(cursor.getDate() + 1);
-  }
-
-  return events.filter((event) => event.date.getFullYear() === year
+  return getAnnualEvents(year).filter((event) => event.date.getFullYear() === year
     && event.date.getMonth() === month)
     .map((event) => ({ ...event, current: isSameDay(event.date, referenceDate) }));
-}
-
-function showScreen(screenName) {
-  if (mainScreen) mainScreen.classList.toggle('active', screenName === 'main');
-  if (customScreen) customScreen.classList.toggle('active', screenName === 'custom');
-
-  const activeScreen = screenName === 'main' ? mainScreen : customScreen;
-  window.requestAnimationFrame(() => observeBubbleItems(activeScreen));
 }
 
 function observeBubbleItems(screen) {
   if (!screen || !bubbleObserver) return;
 
   const items = screen.querySelectorAll(
-    '.paper-sheet > header, .paper-sheet > section'
+    '.paper-sheet > header, .paper-sheet > section, .custom-date-panel > section'
   );
 
   items.forEach((item) => {
@@ -223,7 +173,7 @@ function setupBubbleReveal() {
   });
 
   observeBubbleItems(mainScreen);
-  observeBubbleItems(customScreen);
+  observeBubbleItems(customDatePanel);
 }
 
 function formatDate(date) {
@@ -245,7 +195,7 @@ function buildMainDateFromInput() {
 }
 
 function getMainTargetDate() {
-  return buildMainDateFromInput() || new Date();
+  return appliedMainDate || new Date();
 }
 
 function setDefaultMainDate() {
@@ -254,6 +204,18 @@ function setDefaultMainDate() {
 
   mainDateInput.value = `${futureDate.getFullYear()}-${String(futureDate.getMonth() + 1).padStart(2, '0')}-${String(futureDate.getDate()).padStart(2, '0')}`;
   mainTimeInput.value = '12:00';
+  localStorage.setItem('mainCountdownDate', mainDateInput.value);
+  localStorage.setItem('mainCountdownTime', mainTimeInput.value);
+  appliedMainDate = buildMainDateFromInput();
+}
+
+function updateDateFormState(element, targetDate, time, hasPendingChanges = false) {
+  if (!element || !targetDate) return;
+
+  element.textContent = hasPendingChanges
+    ? 'Hay cambios sin aplicar. La cuenta activa no cambiará hasta que confirmes.'
+    : `Objetivo activo: ${formatDate(targetDate)} · ${time}.`;
+  element.classList.toggle('pending', hasPendingChanges);
 }
 
 function getCountdownParts(targetDate) {
@@ -277,10 +239,123 @@ function getNoteForDate(date) {
 }
 
 function formatNoteDate(date) {
-  return new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
+  return new Intl.DateTimeFormat('es-ES', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(date);
 }
 
-function renderCalendar({ grid, label, targetDate, comparisonDate, calendarDate, events = [], onDayClick }) {
+function updateNoteCharacterCount() {
+  noteCharacterCount.textContent = `${mainNoteInput.value.length} / ${mainNoteInput.maxLength}`;
+}
+
+function getMemoryMood(content) {
+  const normalizedContent = content
+    .toLocaleLowerCase('es')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+  const moods = [
+    { key: 'joy', label: 'Alegría', symbol: '☀', words: ['feliz', 'alegr', 'reimos', 'reir', 'divertid', 'celebr', 'genial', 'sonrei', 'sonrisa'] },
+    { key: 'love', label: 'Cariño', symbol: '♡', words: ['amor', 'te quiero', 'te amo', 'abrazo', 'cariño', 'carino', 'familia', 'juntos', 'beso'] },
+    { key: 'gratitude', label: 'Gratitud', symbol: '✿', words: ['gracias', 'agradecid', 'agradezco', 'gratitud', 'valoro', 'afortunad'] },
+    { key: 'calm', label: 'Calma', symbol: '☾', words: ['paz', 'tranquil', 'calma', 'descanso', 'respirar', 'naturaleza', 'silencio', 'seren'] },
+    { key: 'nostalgia', label: 'Nostalgia', symbol: '✧', words: ['recuerdo', 'extraño', 'extrano', 'antes', 'infancia', 'nostalgia', 'memoria', 'volvimos'] },
+    { key: 'courage', label: 'Ilusión', symbol: '↗', words: ['logre', 'logro', 'meta', 'sueño', 'sueno', 'empece', 'consegui', 'orgullos', 'avance', 'proyecto'] },
+    { key: 'tender', label: 'Un día difícil', symbol: '☁', words: ['triste', 'llore', 'llorar', 'dificil', 'duelo', 'perdi', 'miedo', 'cansad', 'solo', 'preocupa'] },
+  ];
+  const mood = moods.find((candidate) => candidate.words.some((word) => normalizedContent.includes(word)));
+
+  return mood || { key: 'memory', label: 'Un recuerdo', symbol: '✦' };
+}
+
+function renderSavedNotes() {
+  const notes = Object.keys(localStorage)
+    .filter((key) => key.startsWith('calendarNote-'))
+    .map((key) => {
+      const dateKey = key.slice('calendarNote-'.length);
+      const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateKey);
+      if (!match) return null;
+
+      const [, year, month, day] = match;
+      const date = new Date(Number(year), Number(month) - 1, Number(day));
+      const content = localStorage.getItem(key)?.trim();
+      if (!content || getDateKey(date) !== dateKey) return null;
+      return { dateKey, date, content };
+    })
+    .filter((note) => note !== null)
+    .sort((first, second) => first.date.getTime() - second.date.getTime());
+
+  const query = notesSearch.value.trim().toLocaleLowerCase('es');
+  const visibleNotes = notes.filter((note) => (
+    `${formatNoteDate(note.date)} ${note.content}`.toLocaleLowerCase('es').includes(query)
+  ));
+  notesCount.textContent = `${notes.length} ${notes.length === 1 ? 'nota' : 'notas'}`;
+  savedNotesList.replaceChildren();
+
+  if (visibleNotes.length === 0) {
+    const emptyState = document.createElement('p');
+    emptyState.className = 'notes-empty-state';
+    emptyState.textContent = notes.length === 0
+      ? 'Tu libreta está lista. Elige un día del calendario y guarda tu primera nota.'
+      : 'No hay notas que coincidan con tu búsqueda.';
+    savedNotesList.appendChild(emptyState);
+    return;
+  }
+
+  visibleNotes.forEach(({ dateKey, date, content }) => {
+    const mood = getMemoryMood(content);
+    const card = document.createElement('article');
+    card.className = `memory-scrap emotion-${mood.key}`;
+    if (selectedNoteDate && getDateKey(selectedNoteDate) === dateKey) {
+      card.classList.add('selected');
+    }
+
+    const dateLabel = document.createElement('time');
+    dateLabel.className = 'memory-date';
+    dateLabel.dateTime = dateKey;
+    dateLabel.textContent = formatNoteDate(date);
+
+    const moodLabel = document.createElement('span');
+    moodLabel.className = 'memory-mood';
+    moodLabel.textContent = mood.label;
+
+    const memoryMark = document.createElement('span');
+    memoryMark.className = 'memory-mark';
+    memoryMark.textContent = mood.symbol;
+    memoryMark.setAttribute('aria-hidden', 'true');
+
+    const noteContent = document.createElement('p');
+    noteContent.className = 'memory-content';
+    noteContent.textContent = content;
+
+    const actions = document.createElement('div');
+    actions.className = 'saved-note-actions';
+
+    const editButton = document.createElement('button');
+    editButton.className = 'note-action-button';
+    editButton.type = 'button';
+    editButton.dataset.noteAction = 'edit';
+    editButton.dataset.noteDate = dateKey;
+    editButton.textContent = 'Abrir nota';
+    editButton.setAttribute('aria-label', `Editar nota del ${formatNoteDate(date)}`);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'note-action-button delete';
+    deleteButton.type = 'button';
+    deleteButton.dataset.noteAction = 'delete';
+    deleteButton.dataset.noteDate = dateKey;
+    deleteButton.textContent = 'Eliminar';
+    deleteButton.setAttribute('aria-label', `Eliminar nota del ${formatNoteDate(date)}`);
+
+    actions.append(editButton, deleteButton);
+    card.append(memoryMark, dateLabel, moodLabel, noteContent, actions);
+    savedNotesList.appendChild(card);
+  });
+}
+
+function renderCalendar({ grid, label, targetDate, comparisonDate, calendarDate, selectedDate, events = [], onDayClick }) {
   const currentDate = comparisonDate || new Date();
   const displayedDate = calendarDate || currentDate;
   const month = displayedDate.getMonth();
@@ -314,6 +389,7 @@ function renderCalendar({ grid, label, targetDate, comparisonDate, calendarDate,
       && day === targetDate.getDate()
       && month === targetDate.getMonth()
       && year === targetDate.getFullYear();
+    const isSelected = selectedDate && isSameDay(calendarDate, selectedDate);
     const event = events.find((item) => isSameDay(item.date, calendarDate));
     const note = getNoteForDate(calendarDate);
 
@@ -324,6 +400,7 @@ function renderCalendar({ grid, label, targetDate, comparisonDate, calendarDate,
       isPast,
       isToday,
       isTarget,
+      isSelected,
       event,
       note,
       date: calendarDate,
@@ -362,13 +439,23 @@ function renderCalendar({ grid, label, targetDate, comparisonDate, calendarDate,
       cellElement.classList.add('target');
     }
 
+    if (cell.isSelected) {
+      cellElement.classList.add('selected');
+      cellElement.setAttribute('aria-pressed', 'true');
+    } else if (onDayClick) {
+      cellElement.setAttribute('aria-pressed', 'false');
+    }
+
     if (cell.isToday) {
       cellElement.style.boxShadow = 'inset 0 0 0 2px rgba(41, 69, 102, 0.35)';
     }
 
     if (cell.note) {
       cellElement.classList.add('has-note');
-      cellElement.title = `Nota: ${cell.note}`;
+      cellElement.title = `Nota guardada: ${cell.note}`;
+      cellElement.setAttribute('aria-label', `${cell.dayNumber}, tiene una nota guardada`);
+    } else {
+      cellElement.setAttribute('aria-label', String(cell.dayNumber));
     }
 
     const number = document.createElement('span');
@@ -392,14 +479,22 @@ function renderCalendar({ grid, label, targetDate, comparisonDate, calendarDate,
   });
 }
 
-function selectNoteDate(date, input, dateLabel, preview, setter) {
+function selectNoteDate(date, activeGrid) {
   const note = getNoteForDate(date);
-  setter(new Date(date.getFullYear(), date.getMonth(), date.getDate()));
-  input.value = note;
-  dateLabel.textContent = `Día seleccionado: ${formatNoteDate(date)}`;
-  preview.textContent = note ? `Nota guardada: ${note}` : 'Este día todavía no tiene una nota.';
-  preview.classList.toggle('has-note-content', Boolean(note));
-  input.focus();
+  selectedNoteDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  mainCalendarDate = new Date(date.getFullYear(), date.getMonth(), 1);
+  customCalendarDate = new Date(date.getFullYear(), date.getMonth(), 1);
+  mainNoteInput.value = note;
+  mainNoteDate.textContent = formatNoteDate(selectedNoteDate);
+  mainNotePreview.textContent = note ? 'Esta fecha ya tiene una nota. Puedes editarla o eliminarla.' : 'Día listo para agregar una nueva nota.';
+  mainNotePreview.classList.toggle('has-note-content', Boolean(note));
+  updateNoteCharacterCount();
+  mainCalendarRenderKey = undefined;
+  customCalendarRenderKey = undefined;
+  updateMainCountdown();
+  updateCustomCountdown();
+  renderSavedNotes();
+  activeGrid?.querySelector('.calendar-day.selected')?.focus();
 }
 
 function renderMainCalendar(now, targetDate) {
@@ -409,8 +504,9 @@ function renderMainCalendar(now, targetDate) {
     targetDate,
     comparisonDate: now,
     calendarDate: mainCalendarDate,
+    selectedDate: selectedNoteDate,
     events: getCalendarEventsForMonth(mainCalendarDate.getFullYear(), mainCalendarDate.getMonth(), now),
-    onDayClick: (date) => selectNoteDate(date, mainNoteInput, mainNoteDate, mainNotePreview, (value) => { selectedMainNoteDate = value; }),
+    onDayClick: (date) => selectNoteDate(date, calendarGrid),
   });
 }
 
@@ -421,8 +517,9 @@ function renderCustomCalendar(now, targetDate) {
     targetDate,
     comparisonDate: now,
     calendarDate: customCalendarDate,
+    selectedDate: selectedNoteDate,
     events: getCalendarEventsForMonth(customCalendarDate.getFullYear(), customCalendarDate.getMonth(), now),
-    onDayClick: (date) => selectNoteDate(date, customNoteInput, customNoteDate, customNotePreview, (value) => { selectedCustomNoteDate = value; }),
+    onDayClick: (date) => selectNoteDate(date, customCalendarGrid),
   });
 }
 
@@ -466,11 +563,6 @@ function updateMainCountdown() {
     annualEventsRenderKey = annualEventsKey;
   }
 
-  const weeklyMessageKey = getWeekKey(now);
-  if (weeklyMessageKey !== weeklyMessageRenderKey) {
-    updateWeeklyMessage(now);
-    weeklyMessageRenderKey = weeklyMessageKey;
-  }
 }
 
 function updateSeason(now) {
@@ -497,58 +589,6 @@ function renderAnnualEvents(now) {
   `).join('');
 }
 
-function showWeeklyToast(message) {
-  document.querySelector('.weekly-toast')?.remove();
-
-  const toast = document.createElement('aside');
-  toast.className = 'weekly-toast';
-  toast.setAttribute('role', 'status');
-  toast.innerHTML = `<strong>Mensaje de la semana</strong><span>${message}</span>`;
-  document.body.appendChild(toast);
-  window.setTimeout(() => toast.remove(), 8000);
-}
-
-async function sendWeeklyNotification(weeklyMessage) {
-  if (!('Notification' in window) || Notification.permission !== 'granted') return false;
-
-  const options = {
-    body: weeklyMessage.message,
-    icon: './icon-192.svg',
-    tag: weeklyMessage.key,
-    renotify: false,
-  };
-
-  if ('serviceWorker' in navigator) {
-    const registration = await navigator.serviceWorker.ready;
-    await registration.showNotification('Tu mensaje de la semana', options);
-  } else {
-    new Notification('Tu mensaje de la semana', options);
-  }
-
-  localStorage.setItem('lastWeeklyNotification', weeklyMessage.key);
-  return true;
-}
-
-function updateWeeklyMessage(now) {
-  const weeklyMessage = getWeeklyMessage(now);
-  weeklyMessageTitle.textContent = weeklyMessage.message;
-  weeklyMessageText.textContent = 'Un pequeño recordatorio para comenzar con intención.';
-  weeklyMessageDate.textContent = `Semana del ${formatDate(weeklyMessage.date)}`;
-
-  const notificationsEnabled = 'Notification' in window && Notification.permission === 'granted';
-  notificationButton.classList.toggle('enabled', notificationsEnabled);
-  notificationButton.textContent = notificationsEnabled ? 'Avisos activos' : 'Activar avisos';
-
-  if (!localStorage.getItem(`weeklyToast-${weeklyMessage.key}`)) {
-    localStorage.setItem(`weeklyToast-${weeklyMessage.key}`, 'shown');
-    showWeeklyToast(weeklyMessage.message);
-  }
-
-  if (notificationsEnabled && localStorage.getItem('lastWeeklyNotification') !== weeklyMessage.key) {
-    sendWeeklyNotification(weeklyMessage).catch(() => showWeeklyToast(weeklyMessage.message));
-  }
-}
-
 function buildCustomDateFromInput() {
   if (!customDateInput || !customDateInput.value) return null;
 
@@ -560,7 +600,7 @@ function buildCustomDateFromInput() {
 }
 
 function updateCustomCountdown() {
-  const targetDate = buildCustomDateFromInput();
+  const targetDate = appliedCustomDate;
   const now = new Date();
 
   if (!targetDate) {
@@ -600,22 +640,9 @@ function setDefaultCustomDate() {
   customTimeInput.value = '12:00';
   localStorage.setItem('customCountdownDate', customDateInput.value);
   localStorage.setItem('customCountdownTime', customTimeInput.value);
+  appliedCustomDate = buildCustomDateFromInput();
   updateCustomCountdown();
 }
-
-switchToCustom?.addEventListener('click', () => {
-  const savedDate = localStorage.getItem('customCountdownDate');
-  if (savedDate) {
-    customDateInput.value = savedDate;
-    customTimeInput.value = localStorage.getItem('customCountdownTime') || '12:00';
-  }
-  updateCustomCountdown();
-  showScreen('custom');
-});
-
-switchToMain?.addEventListener('click', () => {
-  showScreen('main');
-});
 
 resetButton?.addEventListener('click', () => {
   calendarResetYear = new Date().getFullYear();
@@ -635,58 +662,82 @@ customForm?.addEventListener('submit', (event) => {
 
   localStorage.setItem('customCountdownDate', customDateInput.value);
   localStorage.setItem('customCountdownTime', customTimeInput.value || '00:00');
+  appliedCustomDate = selectedDate;
   updateCustomCountdown();
+  updateDateFormState(customFormState, appliedCustomDate, customTimeInput.value || '00:00');
 });
 
-customDateInput?.addEventListener('input', updateCustomCountdown);
-customTimeInput?.addEventListener('input', updateCustomCountdown);
-
-function saveNote(input, selectedDate, dateLabel, preview, rerender) {
-  if (!selectedDate) {
-    dateLabel.textContent = 'Selecciona un día del calendario';
-    return;
-  }
-
-  const noteKey = `calendarNote-${getDateKey(selectedDate)}`;
-  const note = input.value.trim();
-  if (note) {
-    localStorage.setItem(noteKey, note);
-  } else {
-    localStorage.removeItem(noteKey);
-  }
-
-  dateLabel.textContent = note
-    ? `Nota guardada: ${formatNoteDate(selectedDate)}`
-    : `Nota eliminada: ${formatNoteDate(selectedDate)}`;
-  preview.textContent = note ? `Nota guardada: ${note}` : 'Este día todavía no tiene una nota.';
-  preview.classList.toggle('has-note-content', Boolean(note));
-  rerender();
+function markCustomDateDraft() {
+  updateDateFormState(customFormState, appliedCustomDate, customTimeInput.value || '00:00', true);
 }
+
+customDateInput?.addEventListener('input', markCustomDateDraft);
+customTimeInput?.addEventListener('input', markCustomDateDraft);
 
 previousMonthButton?.addEventListener('click', () => changeCalendarMonth('main', -1));
 nextMonthButton?.addEventListener('click', () => changeCalendarMonth('main', 1));
 previousCustomMonthButton?.addEventListener('click', () => changeCalendarMonth('custom', -1));
 nextCustomMonthButton?.addEventListener('click', () => changeCalendarMonth('custom', 1));
-saveMainNote?.addEventListener('click', () => saveNote(
-  mainNoteInput,
-  selectedMainNoteDate,
-  mainNoteDate,
-  mainNotePreview,
-  () => {
+dayNoteForm?.addEventListener('submit', (event) => {
+  event.preventDefault();
+  if (!selectedNoteDate) return;
+
+  const noteKey = `calendarNote-${getDateKey(selectedNoteDate)}`;
+  const note = mainNoteInput.value.trim();
+  if (note) {
+    localStorage.setItem(noteKey, note);
+    mainNotePreview.textContent = `Nota guardada para el ${formatNoteDate(selectedNoteDate)}.`;
+    mainNotePreview.classList.add('has-note-content');
+  } else {
+    localStorage.removeItem(noteKey);
+    mainNotePreview.textContent = `Nota eliminada para el ${formatNoteDate(selectedNoteDate)}.`;
+    mainNotePreview.classList.remove('has-note-content');
+  }
+
+  mainCalendarRenderKey = undefined;
+  customCalendarRenderKey = undefined;
+  updateMainCountdown();
+  updateCustomCountdown();
+  renderSavedNotes();
+});
+
+mainNoteInput?.addEventListener('input', updateNoteCharacterCount);
+notesSearch?.addEventListener('input', renderSavedNotes);
+savedNotesList?.addEventListener('click', (event) => {
+  const button = event.target.closest('button[data-note-action]');
+  if (!button) return;
+
+  const dateKey = button.dataset.noteDate;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateKey);
+  if (!match) return;
+
+  const [, year, month, day] = match;
+  const date = new Date(Number(year), Number(month) - 1, Number(day));
+  if (getDateKey(date) !== dateKey) return;
+
+  if (button.dataset.noteAction === 'delete') {
+    localStorage.removeItem(`calendarNote-${dateKey}`);
+    if (selectedNoteDate && getDateKey(selectedNoteDate) === dateKey) {
+      mainNoteInput.value = '';
+      mainNotePreview.textContent = `Nota eliminada para el ${formatNoteDate(date)}.`;
+      mainNotePreview.classList.remove('has-note-content');
+      updateNoteCharacterCount();
+    }
     mainCalendarRenderKey = undefined;
-    updateMainCountdown();
-  },
-));
-saveCustomNote?.addEventListener('click', () => saveNote(
-  customNoteInput,
-  selectedCustomNoteDate,
-  customNoteDate,
-  customNotePreview,
-  () => {
     customCalendarRenderKey = undefined;
+    updateMainCountdown();
     updateCustomCountdown();
-  },
-));
+    renderSavedNotes();
+    return;
+  }
+
+  if (button.dataset.noteAction === 'edit') {
+    mainCalendarDate = new Date(date.getFullYear(), date.getMonth(), 1);
+    customCalendarDate = new Date(date.getFullYear(), date.getMonth(), 1);
+    selectNoteDate(date);
+    mainNoteInput.focus();
+  }
+});
 
 mainForm?.addEventListener('submit', (event) => {
   event.preventDefault();
@@ -699,31 +750,65 @@ mainForm?.addEventListener('submit', (event) => {
 
   localStorage.setItem('mainCountdownDate', mainDateInput.value);
   localStorage.setItem('mainCountdownTime', mainTimeInput.value || '12:00');
+  appliedMainDate = selectedDate;
   mainCalendarRenderKey = undefined;
   updateMainCountdown();
+  updateDateFormState(mainFormState, appliedMainDate, mainTimeInput.value || '12:00');
+});
+
+function markMainDateDraft() {
+  updateDateFormState(mainFormState, appliedMainDate, mainTimeInput.value || '12:00', true);
+}
+
+mainDateInput?.addEventListener('input', markMainDateDraft);
+mainTimeInput?.addEventListener('input', markMainDateDraft);
+
+toggleMainForm?.addEventListener('click', () => {
+  if (!mainFormFields) return;
+
+  const isExpanded = toggleMainForm.getAttribute('aria-expanded') === 'true';
+  toggleMainForm.setAttribute('aria-expanded', String(!isExpanded));
+  mainFormFields.hidden = isExpanded;
+});
+
+function setupPersistedPanel(toggle, content, storageKey) {
+  if (!toggle || !content) return;
+
+  const isExpanded = localStorage.getItem(storageKey) !== 'false';
+  toggle.setAttribute('aria-expanded', String(isExpanded));
+  content.hidden = !isExpanded;
+
+  toggle.addEventListener('click', () => {
+    const shouldExpand = toggle.getAttribute('aria-expanded') !== 'true';
+    toggle.setAttribute('aria-expanded', String(shouldExpand));
+    content.hidden = !shouldExpand;
+    localStorage.setItem(storageKey, String(shouldExpand));
+  });
+}
+
+setupPersistedPanel(toggleAnnualEvents, annualEventsContent, 'annualEventsExpanded');
+setupPersistedPanel(toggleCustomDate, customDateContent, 'customDateExpanded');
+
+document.querySelectorAll('.date-shortcut').forEach((button) => {
+  button.addEventListener('click', () => {
+    const form = button.closest('form');
+    const dateInput = form === mainForm ? mainDateInput : customDateInput;
+    if (!dateInput) return;
+
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + Number(button.dataset.days));
+    dateInput.value = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, '0')}-${String(targetDate.getDate()).padStart(2, '0')}`;
+
+    if (form === mainForm) {
+      markMainDateDraft();
+    } else {
+      markCustomDateDraft();
+    }
+  });
 });
 
 themeSwatches.forEach((swatch) => {
   swatch.addEventListener('click', () => applyTheme(swatch.dataset.theme));
-});
-
-notificationButton?.addEventListener('click', async () => {
-  if (!('Notification' in window)) {
-    showWeeklyToast('Tu navegador no permite avisos del sistema, pero verás el mensaje dentro de la app.');
-    return;
-  }
-
-  const permission = await Notification.requestPermission();
-  const weeklyMessage = getWeeklyMessage(new Date());
-
-  if (permission === 'granted') {
-    notificationButton.classList.add('enabled');
-    notificationButton.textContent = 'Avisos activos';
-    await sendWeeklyNotification(weeklyMessage);
-    showWeeklyToast(weeklyMessage.message);
-  } else {
-    showWeeklyToast('Los avisos están desactivados. El mensaje semanal seguirá apareciendo dentro de la app.');
-  }
 });
 
 installButtons.forEach((button) => {
@@ -752,25 +837,33 @@ if ('serviceWorker' in navigator) {
 
 const savedCustomDate = localStorage.getItem('customCountdownDate');
 const savedMainDate = localStorage.getItem('mainCountdownDate');
-applyTheme(localStorage.getItem('notebookTheme') || 'yellow');
+applyTheme(localStorage.getItem('notebookTheme') || 'blue');
 
 if (savedMainDate) {
   mainDateInput.value = savedMainDate;
   mainTimeInput.value = localStorage.getItem('mainCountdownTime') || '12:00';
+  appliedMainDate = buildMainDateFromInput();
+  if (!appliedMainDate) setDefaultMainDate();
 } else {
   setDefaultMainDate();
 }
+updateDateFormState(mainFormState, appliedMainDate, mainTimeInput.value);
 
 if (savedCustomDate) {
   customDateInput.value = savedCustomDate;
   customTimeInput.value = localStorage.getItem('customCountdownTime') || '12:00';
-  updateCustomCountdown();
+  appliedCustomDate = buildCustomDateFromInput();
+  if (!appliedCustomDate) setDefaultCustomDate();
 } else {
   setDefaultCustomDate();
 }
+updateDateFormState(customFormState, appliedCustomDate, customTimeInput.value);
 
+mainNoteDate.textContent = formatNoteDate(selectedNoteDate);
+mainNotePreview.textContent = 'Elige un día del calendario o empieza con hoy.';
+updateNoteCharacterCount();
+renderSavedNotes();
 setupBubbleReveal();
-showScreen('main');
 
 function updateAll() {
   updateMainCountdown();
