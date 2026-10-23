@@ -189,15 +189,15 @@
 
             <aside class="main-sidebar" tabindex="0" aria-label="Sistema de fechas especiales y fecha personalizada">
               <aside class="annual-events" aria-labelledby="annualEventsTitle">
-                <button id="toggleAnnualEvents" class="sidebar-section-toggle" type="button" aria-expanded="true" aria-controls="annualEventsList">
+                <button id="toggleAnnualEvents" class="sidebar-section-toggle" type="button" aria-expanded="false" aria-controls="annualEventsList">
                   <span id="annualEventsTitle">fechas especiales del año</span>
                   <span class="sidebar-toggle-icon" aria-hidden="true">◈</span>
                 </button>
-                <div id="annualEventsList" class="annual-events-list"></div>
+                <div id="annualEventsList" class="annual-events-list" hidden></div>
               </aside>
 
               <section id="customDatePanel" class="custom-date-panel" aria-labelledby="customTitle">
-                <button id="toggleCustomDate" class="sidebar-section-toggle custom-date-heading" type="button" aria-expanded="true" aria-controls="customDateContent">
+                <button id="toggleCustomDate" class="sidebar-section-toggle custom-date-heading" type="button" aria-expanded="false" aria-controls="customDateContent">
                   <span class="sidebar-section-copy">
                     <span id="customTitle" class="sidebar-section-title">Programa una fecha importante</span>
                     <span class="sidebar-section-description">Elige otra fecha para seguirla en una cuenta independiente.</span>
@@ -205,7 +205,7 @@
                   <span class="sidebar-toggle-chevron" aria-hidden="true">⌄</span>
                 </button>
 
-                <div id="customDateContent" class="custom-date-content">
+                <div id="customDateContent" class="custom-date-content" hidden>
                   <form id="customForm" class="custom-form">
                   <div class="form-grid">
                     <label class="field">
@@ -288,6 +288,6 @@
       </section>
     </main>
 
-    <script src="script.js?v=23"></script>
+    <script src="script.js?v=24"></script>
   </body>
 </html>
