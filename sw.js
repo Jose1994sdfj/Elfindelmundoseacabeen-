@@ -1,9 +1,9 @@
-const CACHE_NAME = 'sept-countdown-v44';
+const CACHE_NAME = 'sept-countdown-v45';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css?v=40',
-  './script.js?v=28',
+  './script.js?v=29',
   './manifest.json',
   './icon-192.svg',
   './icon-512.svg'
