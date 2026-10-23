@@ -857,7 +857,7 @@ if (savedCustomDate) {
   customDateInput.value = savedCustomDate;
   customTimeInput.value = localStorage.getItem('customCountdownTime') || '12:00';
   appliedCustomDate = buildCustomDateFromInput();
-  if (!appliedCustomDate) setDefaultCustomDate();
+  if (!appliedCustomDate || appliedCustomDate <= new Date()) setDefaultCustomDate();
 } else {
   setDefaultCustomDate();
 }
