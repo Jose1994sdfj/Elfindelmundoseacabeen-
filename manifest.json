@@ -1,7 +1,7 @@
 {
-  "name": "Laboratorio de IA - Objetivo temporal",
-  "short_name": "Objetivo IA",
-  "description": "Cuenta regresiva configurable para cualquier fecha.",
+  "name": "Fechas que importan - Calendario personal",
+  "short_name": "Fechas",
+  "description": "Calendario personal con cuentas regresivas, fechas especiales y notas para cada día.",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#dcece9",
