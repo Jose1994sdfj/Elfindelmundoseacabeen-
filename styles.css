@@ -944,7 +944,10 @@ h1 {
   .main-sidebar {
     grid-column: 1;
     grid-row: auto;
-    max-height: min(85vh, 760px);
+    max-height: none;
+    overflow-x: visible;
+    overflow-y: visible;
+    scrollbar-gutter: auto;
   }
 
   .annual-events {
